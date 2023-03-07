@@ -1,0 +1,3 @@
+vinho10;ppp.png;3;5;9086
+vinhocaro;pp.jpg;200;10;jose
+binho1;imagem1;-1;0;222
