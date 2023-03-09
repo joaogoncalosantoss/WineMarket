@@ -167,7 +167,7 @@ public class TintolmarketServer {
 								Integer.parseInt(userActionSplited[3]), clientID));
 
 					} else if (userActionSplited[0].equals("view") || userActionSplited[0].equals("v") && arraySize == 2) {
-						outStream.writeObject(viewFunc("./src/wineMarket.txt", userActionSplited[1]));
+						outStream.writeObject(viewFunc("./src/wineCatalog.txt", "./src/wineMarket.txt", userActionSplited[1]));
 
 					} else if (userActionSplited[0].equals("buy") || userActionSplited[0].equals("b") && arraySize == 4) {
                         outStream.writeObject(buyFunc("./src/wineMarket.txt", userActionSplited[1],
@@ -177,8 +177,8 @@ public class TintolmarketServer {
 						walletFunc("./src/userWallet.txt", clientID);
 
 					} else if (userActionSplited[0].equals("classify") || userActionSplited[0].equals("c")) {
-						classifyFunc("./src/wineCatalog.txt", userActionSplited[1],
-								Integer.parseInt(userActionSplited[2]));
+						outStream.writeObject(classifyFunc("./src/wineCatalog.txt", userActionSplited[1],
+								Integer.parseInt(userActionSplited[2])));
 
 					} else if (userActionSplited[0].equals("talk") || userActionSplited[0].equals("t")) {
 						String message = Arrays
@@ -202,9 +202,9 @@ public class TintolmarketServer {
 
 		}
 		
-		private void editFile(String filename, String sellFileLine, int value, int quantity, String operation) {
+		private void editFile(String wineCatalogFile, String sellFileLine, int value, int quantity, String operation) {
 
-			File winesCatalog = new File(filename);
+			File winesCatalog = new File(wineCatalogFile);
 			Scanner winesSc = null;
 
 			try {
@@ -220,15 +220,13 @@ public class TintolmarketServer {
 				String[] wineFileLineSplitted = wineFileLine.split(";");
 
 				if (sellFileLine.equals(wineFileLine)) {
-					isFound = true;
 
-					File fileToBeModified = new File(filename);
-
-					String oldContent = "";
-
+					File fileToBeModified = new File(wineCatalogFile);
 					BufferedReader reader = null;
-
 					FileWriter writer = null;
+
+					isFound = true;
+					String oldContent = "";
 
 					try {
 						reader = new BufferedReader(new FileReader(fileToBeModified));
@@ -246,6 +244,7 @@ public class TintolmarketServer {
 						String newContentWithoutNewLine = "";
 
 						if (operation.equals("buy")) {
+							
 							// Replacing oldString with newString in the oldContent
 							String newString = (wineFileLineSplitted[0] + ";" + wineFileLineSplitted[1] + ";" + value
 									+ ";" + String.valueOf(Integer.parseInt(wineFileLineSplitted[3]) - quantity) + ";"
@@ -253,13 +252,14 @@ public class TintolmarketServer {
 							String newContent = oldContent.replace(wineFileLine, newString);
 							newContentWithoutNewLine = newContent.substring(0, newContent.length() - 2);
 							// Rewriting the input text file with newContent
+							
 						} else if (operation.equals("sell")) {
+							
 							String newString = (wineFileLineSplitted[0] + ";" + wineFileLineSplitted[1] + ";" + value
 									+ ";" + String.valueOf(Integer.parseInt(wineFileLineSplitted[3]) + quantity) + ";"
 									+ wineFileLineSplitted[4] + ";" + wineFileLineSplitted[5]);
 							String newContent = oldContent.replace(wineFileLine, newString);
 							newContentWithoutNewLine = newContent.substring(0, newContent.length() - 2);
-						} else if (operation.equals("classify")) {
 							
 						}
 
@@ -396,42 +396,55 @@ public class TintolmarketServer {
 			return "This wine doesnt exist.";
 		}
 
-		private String viewFunc(String filename, String wine) {
+		private String viewFunc(String wineCatalogName, String wineMarketName, String wine) {
 
-			File winesCatalog = new File(filename);
-			Scanner winesSc = null;
+			File wineCatalogFile = new File(wineCatalogName);
+			File wineMarketFile = new File(wineMarketName);			
 			StringBuilder result = new StringBuilder();
-
+			
+			Scanner catalogSc = null;			
 			try {
-				winesSc = new Scanner(winesCatalog);
+				catalogSc = new Scanner(wineCatalogFile);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
 
-			Boolean isFound = false;
+			Scanner marketSc = null;
+			try {
+				marketSc = new Scanner(wineMarketFile);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+			
+			String[] wineMarketLine = null;
+			while (catalogSc.hasNextLine()) {
+				wineMarketLine = catalogSc.nextLine().split(";");
+				if (wineMarketLine[0].equals(wine));
+					break;
+			}
+			
+			while (marketSc.hasNextLine()) {
 
-			while (winesSc.hasNextLine() && !isFound) {
-
-				String wineFileLine = winesSc.nextLine();
+				String wineFileLine = marketSc.nextLine();
 				String[] wineFileLineSplitted = wineFileLine.split(";");
 
-				if (wine.equals(wineFileLineSplitted[0])) { // nome vinho
-					isFound = true;
+				if (wine.equals(wineFileLineSplitted[0])) {
 
 					result.append(wine + " information:\n Image: " + wineFileLineSplitted[1]
-							+ "\n Average Classification: FALTA AQUI\n");
+							+ "\n Average Classification: " + String.format("%.2f", Float.parseFloat(wineMarketLine[2])/Float.parseFloat(wineMarketLine[3])));
 
 					if (Integer.parseInt(wineFileLineSplitted[3]) > 0)
-						result.append(" Wine seller " + wineFileLineSplitted[4] + "\n Price: " + wineFileLineSplitted[2]
+						result.append("\n Wine seller " + wineFileLineSplitted[4] + "\n Price: " + wineFileLineSplitted[2]
 								+ "\n In Stock: " + wineFileLineSplitted[3]);
-
+					
+					return result.toString();
 				}
 			}
-
-			if (!isFound)
-				result.append("This Wine doesnt exist");
-
-			return result.toString();
+			
+			marketSc.close();
+			catalogSc.close();
+			
+			return result.append("This Wine doesnt exist").toString();
 		}
 
         private String buyFunc(String filename, String wine, int quantity, String sellerID, String clientID)
@@ -489,9 +502,73 @@ public class TintolmarketServer {
 			return 200;
 		}
 
-		private boolean classifyFunc(String filename, String wine, int stars) {
-			// TODO Auto-generated method stub
-			return false;
+		private String classifyFunc(String wineCatalogFile, String wine, int stars) {
+			
+			if (stars < 0 || stars > 5)
+				return "Your classification must be from 0 to 5";
+			
+			File winesCatalog = new File(wineCatalogFile);
+			
+			Scanner winesSc = null;
+
+			try {
+				winesSc = new Scanner(winesCatalog);
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			}
+
+			Boolean isFound = false;
+			while (winesSc.hasNextLine() && !isFound) {
+
+				String wineFileLine = winesSc.nextLine();
+				String[] wineFileLineSplitted = wineFileLine.split(";");
+
+				if (wineFileLineSplitted[0].equals(wine)) {
+					
+					File fileToBeModified = new File(wineCatalogFile);
+					BufferedReader reader = null;
+					FileWriter writer = null;
+	
+					isFound = true;
+					String oldContent = "";
+	
+					try {
+						reader = new BufferedReader(new FileReader(fileToBeModified));
+		
+						String line = reader.readLine();
+						// Reading all the lines of input text file into oldContent
+						while (line != null) {
+							oldContent = oldContent + line + System.lineSeparator();
+							line = reader.readLine();
+						}
+	
+						String newContentWithoutNewLine = "";
+
+						// Replacing oldString with newString in the oldContent
+						String newString = wineFileLineSplitted[0] + ";" + wineFileLineSplitted[1] +
+								";" + (String.valueOf(Integer.parseInt(wineFileLineSplitted[2])+stars)) +
+								";" + String.valueOf(Integer.parseInt(wineFileLineSplitted[3])+1);
+						String newContent = oldContent.replace(wineFileLine, newString);
+						newContentWithoutNewLine = newContent.substring(0, newContent.length() - 2);
+						
+						// Rewriting the input text file with newContent
+						writer = new FileWriter(fileToBeModified);
+						writer.write(newContentWithoutNewLine);
+						
+					} catch (IOException e) {
+						e.printStackTrace();
+					} finally {
+						try {	
+							reader.close();
+							writer.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+			
+			return "Classification atributed";
 		}
 
 		private boolean talkFunc(String filename, String message) {

@@ -1,3 +1,1 @@
-wine;i.png;12:4
-vinhoBranco;branco1.png;0
-vinhoTinto;tinto-png;0:0
+vinhoBranco;branco1.png;8;3
