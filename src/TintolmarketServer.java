@@ -1,6 +1,5 @@
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -203,7 +202,7 @@ public class TintolmarketServer {
 
 		}
 		
-		private void editFile(String filename, String sellFileLine, int value, int quantity, int buyOrSell) {
+		private void editFile(String filename, String sellFileLine, int value, int quantity, String operation) {
 
 			File winesCatalog = new File(filename);
 			Scanner winesSc = null;
@@ -246,7 +245,7 @@ public class TintolmarketServer {
 
 						String newContentWithoutNewLine = "";
 
-						if (buyOrSell == -1) {
+						if (operation.equals("buy")) {
 							// Replacing oldString with newString in the oldContent
 							String newString = (wineFileLineSplitted[0] + ";" + wineFileLineSplitted[1] + ";" + value
 									+ ";" + String.valueOf(Integer.parseInt(wineFileLineSplitted[3]) - quantity) + ";"
@@ -254,12 +253,14 @@ public class TintolmarketServer {
 							String newContent = oldContent.replace(wineFileLine, newString);
 							newContentWithoutNewLine = newContent.substring(0, newContent.length() - 2);
 							// Rewriting the input text file with newContent
-						} else {
+						} else if (operation.equals("sell")) {
 							String newString = (wineFileLineSplitted[0] + ";" + wineFileLineSplitted[1] + ";" + value
 									+ ";" + String.valueOf(Integer.parseInt(wineFileLineSplitted[3]) + quantity) + ";"
 									+ wineFileLineSplitted[4] + ";" + wineFileLineSplitted[5]);
 							String newContent = oldContent.replace(wineFileLine, newString);
 							newContentWithoutNewLine = newContent.substring(0, newContent.length() - 2);
+						} else if (operation.equals("classify")) {
+							
 						}
 
 						writer = new FileWriter(fileToBeModified);
@@ -371,7 +372,7 @@ public class TintolmarketServer {
 
 					if (wine.equals(sellCheckSplitted[0]) && clientID.equals(sellCheckSplitted[5])) {
 						isIn = true;
-						editFile(filenameToWrite, sellCheck, value, quantity, 0);
+						editFile(filenameToWrite, sellCheck, value, quantity, "sell");
 						return "Wine is now on sale.";
 					}
 				}
@@ -478,7 +479,7 @@ public class TintolmarketServer {
 	                        + " - Quantity not available or insufficient funds. SEU POBREEEE.";
 	            }
 	
-	            editFile(filename, wineRequired, Integer.parseInt(wineFileLineSplitted[2]), quantity, -1);
+	            editFile(filename, wineRequired, Integer.parseInt(wineFileLineSplitted[2]), quantity, "buy");
 	            return "Wine purchased.";
 
         }
