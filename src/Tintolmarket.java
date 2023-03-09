@@ -12,11 +12,11 @@ public class Tintolmarket {
 
 		String hostname = "localhost";
 		int port = 12345;
-		
 		try (Socket socket = new Socket(hostname, port)) {
 
 			ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
 			ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
+
 			Scanner clientInterface = new Scanner(System.in);
 			
 			System.out.println("ClientID:");
@@ -55,41 +55,26 @@ public class Tintolmarket {
 					String[] userActionSplited = userAction.split(" ");
 					int arraySize = userActionSplited.length;
 
-					if (userActionSplited[0].equals("add") || userActionSplited[0].equals("a") && arraySize == 3) {
+					System.out.println((String)inStream.readObject());
 						
-						if (!(Boolean) inStream.readObject()) {
-							System.out.println("This wine already exists.");
-						} else {
-							System.out.println("Wine added.");
-						}
-
-					} else if (userActionSplited[0].equals("sell") || userActionSplited[0].equals("s") && arraySize == 3) {
-						
-						if (!(Boolean) inStream.readObject()) {
-							System.out.println("This wine doesnt exist.");
-						} else {
-							System.out.println("Wine is now on sale.");
-						}
-
-					} else if (userActionSplited[0].equals("view") || userActionSplited[0].equals("v") && arraySize == 2) {
-
-						System.out.println((String)inStream.readObject());
-						
-					} else if (userActionSplited[0].equals("buy") || userActionSplited[0].equals("b")) {
-
-					} else if (userActionSplited[0].equals("wallet") || userActionSplited[0].equals("w")) {
-
-					} else if (userActionSplited[0].equals("classify") || userActionSplited[0].equals("c")) {
-
-					} else if (userActionSplited[0].equals("talk") || userActionSplited[0].equals("t")) {
-
-					} else if (userActionSplited[0].equals("read") || userActionSplited[0].equals("r")) {
-
-					} else if (userActionSplited[0].equals("exit") || userActionSplited[0].equals("e")) {
-						break;
-					} else {
-						continue;
-					}
+//					if (userActionSplited[0].equals("add") || userActionSplited[0].equals("a") && arraySize == 3) {
+//					} else if (userActionSplited[0].equals("sell") || userActionSplited[0].equals("s") && arraySize == 3) {
+//					} else if (userActionSplited[0].equals("view") || userActionSplited[0].equals("v") && arraySize == 2) {
+//					} else if (userActionSplited[0].equals("buy") || userActionSplited[0].equals("b")) {
+//
+//					} else if (userActionSplited[0].equals("wallet") || userActionSplited[0].equals("w")) {
+//
+//					} else if (userActionSplited[0].equals("classify") || userActionSplited[0].equals("c")) {
+//
+//					} else if (userActionSplited[0].equals("talk") || userActionSplited[0].equals("t")) {
+//
+//					} else if (userActionSplited[0].equals("read") || userActionSplited[0].equals("r")) {
+//
+//					} else if (userActionSplited[0].equals("exit") || userActionSplited[0].equals("e")) {
+//						break;
+//					} else {
+//						continue;
+//					}
 				}
 
 			} catch (ClassNotFoundException e) {
