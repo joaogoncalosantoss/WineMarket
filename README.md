@@ -1,8 +1,3 @@
-# CONTENTS
-    * Introduction
-    * Usage
-    * Contributors
-
 # INTRODUCTION
 
 The work consists of implementing the Tintolmarket system, which is a client-server type system offering a similar service
