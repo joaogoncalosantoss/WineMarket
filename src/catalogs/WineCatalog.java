@@ -19,7 +19,7 @@ public class WineCatalog {
         return instance;
 	}
 	
-	public Wine getWineByID(String id) {
+	public synchronized Wine getWineByID(String id) {
 		
 		for (Wine w: winesCatalog)
 			if (w.getID().equals(id))
@@ -28,7 +28,15 @@ public class WineCatalog {
 		return null;	
 	}
 	
-	public void add(Wine wine) {
+	public synchronized void add(Wine wine) {
 		winesCatalog.add(wine);
+	}
+
+	public synchronized int getSize() {
+		return winesCatalog.size();
+	}
+	
+	public synchronized Boolean exists(String wineID) {
+		return instance.getWineByID(wineID) != null;
 	}
 }

@@ -1,37 +1,46 @@
 package domain;
 
 public class Wine {
-	
+
 	private String id;
-	private String photo;
-	private int classicationSum;
-	private int classicationCount;
+	private String image;
+	private int classificationSum;
+	private int classificationCount;
 	private String avgClassification;
-	
-	public Wine(String id, String photo) {
+
+	public Wine(String id, String image, int classificationSum, int classificationCount) {
 		this.id = id;
-		this.photo = photo;
+		this.image = image;
+		this.classificationSum = classificationSum;
+		this.classificationCount = classificationCount;
+		this.avgClassification = initClassification(classificationSum, classificationCount);
 	}
-	
+
 	public String getID() {
 		return this.id;
 	}
 
-	public String getPhoto() {
-		return photo;
+	public String getImage() {
+		return image;
 	}
-	
+
+	private String initClassification(int classificationSum, int classificationCount) {
+		if (classificationCount != 0)
+			return String.format("%.2f", Float.parseFloat(String.valueOf(this.classificationSum))
+					/ Float.parseFloat(String.valueOf(this.classificationCount)));
+
+		return "0";
+	}
+
 	public void updateClassification(int stars) {
-		this.classicationSum =+ stars;
-		this.classicationCount++;
-		
-		this.setAvgClassification(String.format("%.2f", 
-				Float.parseFloat(String.valueOf(this.classicationSum))
-				/ Float.parseFloat(String.valueOf(this.classicationCount)) ));
-	}
-	
-	public String getClassification() {
-		return photo;
+		this.classificationSum += stars;
+		this.classificationCount++;
+
+		if (classificationCount != 0)
+			this.setAvgClassification(String.format("%.2f", Float.parseFloat(String.valueOf(this.classificationSum))
+					/ Float.parseFloat(String.valueOf(this.classificationCount))));
+		else
+			this.setAvgClassification("0");
 	}
 
 	public String getAvgClassification() {
@@ -41,5 +50,5 @@ public class Wine {
 	public void setAvgClassification(String avgClassification) {
 		this.avgClassification = avgClassification;
 	}
-	
+
 }
