@@ -58,10 +58,3 @@ exit
 ---
 
 For client to run the add function he must have the wine image in the local repository.
-
-# CONTRIBUTORS
-
- João Santos
- Paulo Bolinhas
- Rui Martins
--------------------------------------------------------------------------------------------------
